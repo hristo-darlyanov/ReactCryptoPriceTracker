@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import ListItem from './components/ListItem'
 import { SAMPLE_DATA } from './assets/data/sampleData'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import ListItem from './components/ListItem'
+import Chart from './components/Chart'
 
 const ListHeader = () => (
   <>
@@ -14,23 +17,53 @@ const ListHeader = () => (
 )
 
 export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
+  const [selectedCoinData, setSelectedCoinData] = useState(null)
+  const bottomSheetModalRef = useRef(null)
+  const snapPoints = useMemo(() => ['50%'], [])
+  const openModal = (item) => {
+    setSelectedCoinData(item)
+    bottomSheetModalRef.current.present();
+  }
 
-      <FlatList
-        keyExtractor={(item) => item.id}
-        data={SAMPLE_DATA}
-        renderItem={({ item }) => (
-          <ListItem
-            name={item.name}
-            symbol={item.symbol}
-            currentPrice={item.current_price}
-            priceChangePercentage7d={item.price_change_percentage_7d_in_currency}
-            logoUrl={item.image} />
-        )}
-        ListHeaderComponent={<ListHeader/>} 
-      />
-    </SafeAreaView>
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
+      <BottomSheetModalProvider>
+        <SafeAreaView style={styles.container}>
+          <FlatList
+            keyExtractor={(item) => item.id}
+            data={SAMPLE_DATA}
+            renderItem={({ item }) => (
+              <ListItem
+                name={item.name}
+                symbol={item.symbol}
+                currentPrice={item.current_price}
+                priceChangePercentage7d={item.price_change_percentage_7d_in_currency}
+                logoUrl={item.image}
+                onPress={() => openModal(item)}
+              />
+            )}
+            ListHeaderComponent={<ListHeader />}
+          />
+        </SafeAreaView>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={snapPoints}
+          style={styles.bottomSheet}
+        >
+          {selectedCoinData ?
+            <Chart
+              currentPrice={selectedCoinData.current_price}
+              logoUrl={selectedCoinData.image}
+              name={selectedCoinData.name}
+              priceChangePercentage7d={selectedCoinData.price_change_percentage_7d_in_currency}
+              sparkline={selectedCoinData.sparkline_in_7d.price}
+            />
+            : null}
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -52,5 +85,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     marginHorizontal: 16,
     marginTop: '4%'
-  }
+  },
+  bottomSheet: {
+    backgroundColor: 'rgba(255, 255, 255,0)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
+    shadowOpacity: 0.50,
+    shadowRadius: 12.35,
+
+    elevation: 19,
+  },
 });
