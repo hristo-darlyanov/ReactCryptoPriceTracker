@@ -47,20 +47,21 @@ export default function App() {
           />
         </SafeAreaView>
         <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          snapPoints={snapPoints}
-          style={styles.bottomSheet}
-        >
-          {selectedCoinData ?
-            <Chart
-              currentPrice={selectedCoinData.current_price}
-              logoUrl={selectedCoinData.image}
-              name={selectedCoinData.name}
-              priceChangePercentage7d={selectedCoinData.price_change_percentage_7d_in_currency}
-              sparkline={selectedCoinData.sparkline_in_7d.price}
-            />
-            : null}
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        style={styles.bottomSheet}
+      >
+        { selectedCoinData ? (
+          <Chart
+            currentPrice={selectedCoinData.current_price}
+            logoUrl={selectedCoinData.image}
+            name={selectedCoinData.name}
+            symbol={selectedCoinData.symbol}
+            priceChangePercentage7d={selectedCoinData.price_change_percentage_7d_in_currency}
+            sparkline={selectedCoinData?.sparkline_in_7d.price}
+          />
+        ) : null}
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
