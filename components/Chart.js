@@ -1,13 +1,32 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, Dimensions } from 'react-native'
 import React from 'react'
-import {ChartDot, ChartPath, ChartPathProvider, monotoneCubicInterpolation} from '@rainbow-me/animated-charts';
+import { LineChart } from 'react-native-wagmi-charts';
 
 const Chart = ({currentPrice, logoUrl, name, symbol, priceChangePercentage7d, sparkline}) => {
     const priceChangeColor = priceChangePercentage7d > 0 ? 'green' : 'red';
 
-  return (
-    <View style={styles.chartWrapper}>
+    const data = [
+        {
+          timestamp: 1625945400000,
+          value: 33575.25,
+        },
+        {
+          timestamp: 1625946300000,
+          value: 33545.25,
+        },
+        {
+          timestamp: 1625947200000,
+          value: 33510.25,
+        },
+        {
+          timestamp: 1625948100000,
+          value: 33215.25,
+        },
+      ];
 
+  return (
+    <LineChart.Provider data={data}>
+    <View style={styles.chartWrapper}>
         <View style={styles.titlesWrapper}>
             <View style={styles.upperTitles}>
                 <View style={styles.upperLeftTitle}>
@@ -21,7 +40,11 @@ const Chart = ({currentPrice, logoUrl, name, symbol, priceChangePercentage7d, sp
                 <Text style={[styles.titles, {color : priceChangeColor}]}>{priceChangePercentage7d.toFixed(2)}%</Text>
             </View>
         </View>
+        <LineChart>
+            <LineChart.Path />
+        </LineChart>
     </View>
+    </LineChart.Provider>
   )
 }
 
