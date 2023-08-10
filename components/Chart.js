@@ -39,7 +39,7 @@ const Chart = ({currentPrice, logoUrl, name, symbol, priceChangePercentage7d, sp
       ];
 
     return (
-        <LineChart.Provider data={data}>
+        <LineChart.Provider data={sparkline}>
             <View style={styles.chartWrapper}>
                 <View style={styles.titlesWrapper}>
                     <View style={styles.upperTitles}>

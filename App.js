@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { SAMPLE_DATA } from './assets/data/sampleData'
@@ -6,6 +6,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import ListItem from './components/ListItem'
 import Chart from './components/Chart'
+import { getMarketData } from './services/cryptoService';
 
 const ListHeader = () => (
   <>
@@ -17,6 +18,7 @@ const ListHeader = () => (
 )
 
 export default function App() {
+  const [data, setData] = useState([])
   const [selectedCoinData, setSelectedCoinData] = useState(null)
   const bottomSheetModalRef = useRef(null)
   const snapPoints = useMemo(() => ['50%'], [])
@@ -25,6 +27,15 @@ export default function App() {
     bottomSheetModalRef.current.present();
   }
 
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      const marketData = await getMarketData();
+      setData(marketData)
+    }
+
+    fetchMarketData()
+  },[])
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
 
@@ -32,7 +43,7 @@ export default function App() {
         <SafeAreaView style={styles.container}>
           <FlatList
             keyExtractor={(item) => item.id}
-            data={SAMPLE_DATA}
+            data={data}
             renderItem={({ item }) => (
               <ListItem
                 name={item.name}
