@@ -2,49 +2,76 @@ import { StyleSheet, Text, View, Image, Dimensions } from 'react-native'
 import React from 'react'
 import { LineChart } from 'react-native-wagmi-charts';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const Chart = ({currentPrice, logoUrl, name, symbol, priceChangePercentage7d, sparkline}) => {
     const priceChangeColor = priceChangePercentage7d > 0 ? 'green' : 'red';
 
+    const formatUSD = value => {
+        'worklet';
+        if (value === ''){
+            const formattedValue =`${parseFloat(currentPrice).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
+            return `$${formattedValue.toLocaleString('en-usd', { currency: 'usd' })}`
+        }
+        
+        const formattedValue =`${parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
+        return `$${formattedValue.toLocaleString('en-usd', { currency: 'usd' })}`
+    }
+
     const data = [
         {
-          timestamp: 1625945400000,
-          value: 33575.25,
+          "x": 0,
+          "value": 33575,
         },
         {
-          timestamp: 1625946300000,
-          value: 33545.25,
+          "x": 0,
+          "value": 33545,
         },
         {
-          timestamp: 1625947200000,
-          value: 33510.25,
+          "x": 0,
+          "value": 33510,
         },
         {
-          timestamp: 1625948100000,
-          value: 33215.25,
+          "x": 0,
+          "value": 33215,
         },
       ];
 
-  return (
-    <LineChart.Provider data={data}>
-    <View style={styles.chartWrapper}>
-        <View style={styles.titlesWrapper}>
-            <View style={styles.upperTitles}>
-                <View style={styles.upperLeftTitle}>
-                    <Image source={{uri: logoUrl}} style={styles.image}/>
-                    <Text style={styles.subtitle}>{name} ({symbol.toUpperCase()})</Text>
+    return (
+        <LineChart.Provider data={data}>
+            <View style={styles.chartWrapper}>
+                <View style={styles.titlesWrapper}>
+                    <View style={styles.upperTitles}>
+                        <View style={styles.upperLeftTitle}>
+                            <Image source={{ uri: logoUrl }} style={styles.image} />
+                            <Text style={styles.subtitle}>{name} ({symbol.toUpperCase()})</Text>
+                        </View>
+                        <Text style={styles.subtitle}>7d</Text>
+                    </View>
+                    <View style={styles.lowerTitles}>
+                        <LineChart.PriceText
+                            format={({ value }) => {
+                                'worklet';
+                                const formattedPrice = formatUSD(value);
+                                return `${formattedPrice}`;
+                            }}
+                            style={styles.boldTitle}
+                        />
+                        {/* <Text style={styles.boldTitle}>${currentPrice.toLocaleString('en-usd', { currency: 'usd' })}</Text> */}
+                        <Text style={[styles.titles, { color: priceChangeColor }]}>{priceChangePercentage7d.toFixed(2)}%</Text>
+                    </View>
                 </View>
-                <Text style={styles.subtitle}>7d</Text>
+                <View style={styles.chartLineWrapper}>
+                    <LineChart height={windowHeight / 4}>
+                        <LineChart.Path />
+                        <LineChart.CursorCrosshair>
+                            <LineChart.Tooltip />
+                        </LineChart.CursorCrosshair>
+                    </LineChart>
+                </View>
             </View>
-            <View style={styles.lowerTitles}>
-                <Text style={styles.boldTitle}>${currentPrice.toLocaleString('en-usd', {currency: 'usd'})}</Text>
-                <Text style={[styles.titles, {color : priceChangeColor}]}>{priceChangePercentage7d.toFixed(2)}%</Text>
-            </View>
-        </View>
-        <LineChart>
-            <LineChart.Path />
-        </LineChart>
-    </View>
-    </LineChart.Provider>
+        </LineChart.Provider>
   )
 }
 
@@ -52,10 +79,10 @@ export default Chart
 
 const styles = StyleSheet.create({
     chartWrapper: {
-        margin:16
+        marginVertical:16,
     },
     titlesWrapper: {
-
+        marginHorizontal: 16
     },
     upperTitles: {
         flexDirection:'row',
@@ -86,5 +113,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18
+    },
+    chartLineWrapper: {
+        marginTop: 40,
     }
 })
